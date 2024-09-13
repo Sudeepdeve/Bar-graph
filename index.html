@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pareto Diagram - Helping Hands SQC</title>
+    <style>
+        /* General Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f8ff;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            animation: fadeIn 1.5s ease-in-out;
+        }
+
+        /* Fade-in animation */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .container {
+            width: 1000px;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+            text-align: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #003366;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        h2 {
+            color: #003366;
+            font-size: 1.8rem;
+            margin-bottom: 40px;
+        }
+
+        /* Larger Chart Container */
+        #paretoChart {
+            display: block;
+            margin: 0 auto;
+            width: 900px; /* Adjusted for larger size */
+            height: 500px; /* Adjusted for larger size */
+        }
+
+        .footer {
+            margin-top: 20px;
+            color: #666;
+            font-size: 1.2rem;
+        }
+
+        /* Bubble Animation */
+        .bubble {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background-color: rgba(0, 80, 160, 0.1);
+            border-radius: 50%;
+            animation: moveBubble 10s linear infinite;
+            z-index: 1;
+        }
+
+        .bubble:nth-child(2) {
+            width: 100px;
+            height: 100px;
+            left: 20%;
+            animation-duration: 12s;
+        }
+
+        .bubble:nth-child(3) {
+            width: 80px;
+            height: 80px;
+            left: 50%;
+            animation-duration: 15s;
+        }
+
+        .bubble:nth-child(4) {
+            width: 120px;
+            height: 120px;
+            left: 80%;
+            animation-duration: 18s;
+        }
+
+        @keyframes moveBubble {
+            0% {
+                bottom: -120px;
+                transform: translateX(0);
+            }
+            100% {
+                bottom: 100vh;
+                transform: translateX(-50px);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+            h2 {
+                font-size: 1.4rem;
+            }
+            .container {
+                width: 90%;
+            }
+            #paretoChart {
+                width: 100%; /* Responsive resizing for smaller screens */
+                height: auto;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Background Bubbles -->
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+
+    <div class="container">
+        <!-- Main Heading -->
+        <h1>SQC Team</h1>
+        <h2>Helping Hands - Pareto Diagram</h2>
+
+        <!-- Pareto Diagram Canvas -->
+        <canvas id="paretoChart"></canvas>
+
+      
+
+    <!-- Chart.js Library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Pareto chart setup using Chart.js (Mixed bar and line graph)
+        const ctx = document.getElementById('paretoChart').getContext('2d');
+        const data = {
+            labels: ['35-40', '60-65', '45-50', '80-85', '70-75', '90-95', '95-100'],
+            datasets: [{
+                type: 'bar',
+                label: 'Frequency',
+                data: [120, 100, 85, 75, 60, 40, 20],
+                backgroundColor: '#6699cc',
+                borderColor: '#003366',
+                borderWidth: 2
+            }, {
+                type: 'line',
+                label: 'Cumulative Percentage',
+                data: [26, 48, 66, 80, 91, 97, 100],
+                borderColor: '#ff6600',
+                borderWidth: 3,
+                fill: false,
+                tension: 0.4, // Smooth line
+                yAxisID: 'y2'
+            }]
+        };
+
+        const paretoChart = new Chart(ctx, {
+            data: data,
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            color: '#003366',
+                            font: {
+                                size: 14
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Frequency',
+                            color: '#003366',
+                            font: {
+                                size: 16,
+                                weight: 'bold'
+                            }
+                        }
+                    },
+                    y2: {
+                        position: 'right',
+                        beginAtZero: true,
+                        ticks: {
+                            color: '#ff6600',
+                            font: {
+                                size: 14
+                            },
+                            callback: function(value) {
+                                return value + '%'; // Add percentage to line values
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Cumulative Percentage',
+                            color: '#ff6600',
+                            font: {
+                                size: 16,
+                                weight: 'bold'
+                            }
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            color: '#003366',
+                            font: {
+                                size: 14
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            font: {
+                                size: 16,
+                                family: 'Arial'
+                            },
+                            color: '#003366'
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+
+</body>
+</html>
